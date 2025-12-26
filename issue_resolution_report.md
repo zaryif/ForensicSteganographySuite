@@ -50,7 +50,7 @@ When a user uploaded a small cover image combined with a large secret payload, t
 ---
 
 ## Security Verification
-After all changes, we verified that the core security features remain untouched:
+After all changes, I verified that the core security features remain untouched:
 - **AES-GCM 256-bit Encryption:** Active
 - **PBKDF2 Key Derivation:** Active (200,000 rounds)
 - **CSPRNG Noise Injection:** Active (Full surface)

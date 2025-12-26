@@ -334,7 +334,7 @@ log(`> Cover will be auto-resized: ${originalWidth}x${originalHeight} → ${newW
 
 ## Security Verification After All Changes
 
-After all modifications, we performed comprehensive security audits to ensure **zero compromise** to anti-forensic features:
+After all modifications, I performed comprehensive security audits to ensure **zero compromise** to anti-forensic features:
 
 ### ✅ Cryptographic Security (INTACT)
 
