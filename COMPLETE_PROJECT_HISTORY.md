@@ -7,19 +7,36 @@
 
 ---
 
-## Project Genesis
+```
 
-### Vision & Objectives
+---
 
-The Radiohead Vault was conceived as an **ultimate anti-forensic data storage solution** that combines:
-- **Military-grade encryption** (AES-GCM 256-bit)
-- **Steganographic concealment** (LSB injection in PNG/WAV)
-- **Anti-forensic noise injection** (CSPRNG full-surface flooding)
-- **Multi-platform implementations** (Web, Python, C++, Rust, Swift, Bash)
+## The CRT Terminal Aesthetic
 
-The project aims to make hidden encrypted data **mathematically indistinguishable from random noise**, defeating statistical analysis tools like chi-square tests, RS analysis, and entropy detection.
+The Radiohead Vault is more than just a utility; it is a sensory experience inspired by the "Radiohead // OK Computer" aesthetic and retro-terminal computing.
 
-### Core Architecture
+- **Visual Design:** The interface utilizes a high-contrast green-on-black color palette, mimicking early monochrome CRT monitors.
+- **Micro-Animations:** Subtle scanlines, flickering effects, and terminal-style log output create an atmosphere of high-stakes digital espionage.
+- **UX Design:** The "ULTIMATE CRT EDITION" (v5.1) focuses on a no-nonsense, command-driven layout that prioritizes functional clarity and operational stealth.
+
+---
+
+## Cross-Platform Implementation Matrix
+
+To ensure maximum versatility, I implemented the Radiohead Vault across six different programming environments, each with a unique forensic profile.
+
+| Language | Environment | Forensic Profile | Primary Defense |
+| :--- | :--- | :--- | :--- |
+| **HTML5/JS** | Web Browser | **ULTRA-CLEAN** | Runs in volatile RAM; zero persistent disk footprint. |
+| **Rust** | System Binary | **HARDENED** | Memory-safe execution; resistant to buffer overflows. |
+| **C++** | System Binary | **PERFORMANCE** | High-speed processing for bulk file encryption. |
+| **Python** | Scripting | **AUTOMATED** | Ideal for server-side automation and batch analysis. |
+| **Swift** | iOS Native | **MOBILE** | Leverages iOS Secure Enclave for hardware-backed keys. |
+| **Bash** | Linux Shell | **NATIVE** | Uses standard Unix utilities; no external dependencies. |
+
+---
+
+## Core Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -362,6 +379,34 @@ After all modifications, I performed comprehensive security audits to ensure **z
 | **Entropy Detection** | Uniform entropy across entire file | ✅ Protected |
 | **Metadata Analysis** | All EXIF/metadata stripped | ✅ Protected |
 | **Visual Inspection** | No visible artifacts in output | ✅ Protected |
+
+---
+
+## Anti-Forensic Technical Deep Dive
+
+### The Mathematics of LSB Steganography
+Least Significant Bit (LSB) steganography works by replacing the last bit of a color channel or audio sample with payload data. 
+
+In a standard PNG:
+- A single pixel has 3-4 channels (R, G, B, and sometimes Alpha).
+- Changing the LSB of a channel (e.g., from `11010010` to `11010011`) shifts the value by only 1 part in 256. 
+- This color shift is mathematically undetectable to the human eye.
+
+### Why CSPRNG is the "Silver Bullet"
+Standard random functions (like `Math.random()`) are pseudo-random and follow predictable cycles. A forensic investigator can use **chi-square analysis** to find areas that look "too orderly."
+
+By using `window.crypto.getRandomValues()`, I ensure that the noise injected into the vault follows no detectable pattern. Every single unused bit is a cryptographic coin toss, ensuring the file's entropy signature is uniform from start to finish.
+
+---
+
+## Operational Security (OpSec) Best Practices
+
+To achieve the highest level of security, I recommend following these OpSec protocols:
+
+1. **Air-Gap Protocol:** Disconnect all network interfaces before executing the Web Vault.
+2. **Volatile Memory Only:** Whenever possible, use the vault within an OS running entirely from RAM (e.g., Tails) to ensure no traces remain on the physical drive.
+3. **USB Protocol:** Keep vault files stored on encrypted, hidden USB partitions.
+4. **Camouflage:** Use cover images that are visually "complex" (nature photos, crowded cityscapes) rather than flat colors to make the LSB noise blend even more naturally.
 
 ---
 

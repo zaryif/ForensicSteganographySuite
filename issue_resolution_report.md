@@ -49,9 +49,21 @@ When a user uploaded a small cover image combined with a large secret payload, t
 
 ---
 
-## Security Verification
-After all changes, I verified that the core security features remain untouched:
-- **AES-GCM 256-bit Encryption:** Active
-- **PBKDF2 Key Derivation:** Active (200,000 rounds)
-- **CSPRNG Noise Injection:** Active (Full surface)
-- **Metadata Scrubbing:** Verified (Canvas redrawing strips EXIF)
+- **Metadata Scrubbing:** Verified (Canvas redrawing strips EXIF).
+
+---
+
+## Technical Post-Mortem: iOS vs. Desktop
+
+During the resolution of Issue #1, I identified a critical difference in browser engine implementations:
+- **V8 (Chrome/Edge):** Forgiving toward block-scoped variables accessed in adjacent blocks.
+- **JavaScriptCore (Safari/iOS):** Strict adherence to ECMAScript standards. 
+
+By identifying this, I have moved the codebase toward a "strict-compliant" architecture, ensuring it will remain functional on even the most restrictive mobile browsers.
+
+## Future Proofing & Resilience
+
+Today's updates do more than fix current bugs; they build a foundation for long-term project resilience:
+1. **Source Agnostic:** By supporting JPEG-to-PNG conversion, the vault is no longer dependent on the user possessing specific file types.
+2. **Dynamic Scaling:** The improved auto-resize logic means the vault can scale to accommodate future "super-payloads" (e.g., 50MB+ folders) without visual artifacts.
+3. **Forensic Resilience:** By moving to a strict CSPRNG model for all noise and data injection, I have ensured that the vault is prepared for the next generation of statistical forensic tools.
