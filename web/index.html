@@ -169,6 +169,177 @@
 
         // --- STEGO CORE ---
         // CSPRNG Noise Generator
+<!-- 
+    RADIOHEAD VAULT v5.0 (Silent Edition)
+    Architect: Md Zarif Azfar
+    Copyright © 2025. All Rights Reserved.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RADIOHEAD // VAULT v5.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #0f0;
+            --dim: #004400;
+            --err: #f33;
+            --font: 'Courier New', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--font);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid var(--dim);
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--fg);
+            text-transform: uppercase;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid var(--fg);
+            color: var(--fg);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background: #111;
+            border: 1px solid var(--dim);
+            color: var(--fg);
+            margin-bottom: 10px;
+        }
+
+        #log {
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid var(--dim);
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+
+        .tab {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab button {
+            flex: 1;
+            padding: 10px;
+            background: #111;
+            border: 1px solid var(--dim);
+            color: var(--dim);
+            cursor: pointer;
+        }
+
+        .tab button.active {
+            background: var(--fg);
+            color: var(--bg);
+            font-weight: bold;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Radiohead Vault <span style="font-size:0.5em">v5.0</span></h1>
+        <div class="tab">
+            <button class="active" onclick="setMode('lock')">LOCK (Hide)</button>
+            <button onclick="setMode('unlock')">UNLOCK (Retrieve)</button>
+        </div>
+
+        <!-- LOCK UI -->
+        <div id="lock" class="panel active">
+            <label>Files to Hide:</label><input type="file" id="files" multiple>
+            <label>Cover (PNG/WAV):</label><input type="file" id="cover" accept=".png,.wav">
+            <label>Password:</label><input type="password" id="pw_lock">
+            <button class="btn" onclick="processLock()">ENCRYPT & HIDE</button>
+        </div>
+
+        <!-- UNLOCK UI -->
+        <div id="unlock" class="panel">
+            <label>Vault File (PNG/WAV):</label><input type="file" id="vault">
+            <label>Password:</label><input type="password" id="pw_unlock">
+            <button class="btn" onclick="processUnlock()">EXTRACT & DECRYPT</button>
+        </div>
+
+        <div id="log">SYSTEM READY...</div>
+    </div>
+
+    <script>
+        const log = (m) => document.getElementById('log').innerText += `\n[${new Date().toLocaleTimeString()}] ${m}`;
+        const setMode = (m) => {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
+            document.getElementById(m).classList.add('active');
+            event.target.classList.add('active');
+        };
+
+        // --- CRYPTO CORE ---
+        async function getK(pw, salt) {
+            const enc = new TextEncoder();
+            const kmat = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
+            return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 200000, hash: "SHA-256" }, kmat, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+        }
+
+        async function crypt(data, pw, op) {
+            if (op === 'enc') {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const key = await getK(pw, salt);
+                const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
+                const res = new Uint8Array(salt.length + iv.length + ct.byteLength);
+                res.set(salt, 0); res.set(iv, 16); res.set(new Uint8Array(ct), 28);
+                return res;
+            } else {
+                const salt = data.slice(0, 16);
+                const iv = data.slice(16, 28);
+                const ct = data.slice(28);
+                const key = await getK(pw, salt);
+                return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct));
+            }
+        }
+
+        // --- STEGO CORE ---
+        // CSPRNG Noise Generator
         const rndBit = () => {
             const buf = new Uint8Array(1);
             crypto.getRandomValues(buf);
@@ -176,71 +347,180 @@
         };
 
         async function processLock() {
-            try {
-                log("Starting Lock Sequence...");
-                const files = document.getElementById('files').files;
-                const cover = document.getElementById('cover').files[0];
-                const pw = document.getElementById('pw_lock').value;
+        try {
+            log("Starting Lock Sequence...");
+            const files = document.getElementById('files').files;
+            const cover = document.getElementById('cover').files[0];
+            const pw = document.getElementById('pw_lock').value;
+            
+            if(!files.length || !cover || !pw) throw "Missing inputs";
 
-                if (!files.length || !cover || !pw) throw "Missing inputs";
+            // 1. Zip
+            const zip = new JSZip();
+            for(let f of files) zip.file(f.name, f);
+            const zData = await zip.generateAsync({type:"uint8array"});
+            
+            // 2. Encrypt
+            const encData = await crypt(zData, pw, 'enc');
+            log(`Encrypted size: ${encData.length} bytes`);
 
-                // 1. Zip
-                const zip = new JSZip();
-                for (let f of files) zip.file(f.name, f);
-                const zData = await zip.generateAsync({ type: "uint8array" });
+            // 3. Prepare Cover
+            const isWav = cover.name.endsWith('wav');
+            const ab = await cover.arrayBuffer();
+            let bytes = new Uint8Array(ab);
+            let offset = 0;
+            let width, height; // For PNG
 
-                // 2. Encrypt
-                const encData = await crypt(zData, pw, 'enc');
-                log(`Encrypted size: ${encData.length} bytes`);
+            if(isWav) {
+                const dv = new DataView(ab);
+                let p = 12;
+                while(p < dv.byteLength) {
+                    if(dv.getUint32(p, false) === 0x64617461) { // 'data'
+                        offset = p + 8;
+                        break;
+                    }
+                    p += 8 + dv.getUint32(p+4, true);
+                }
+            } else {
+                const bmp = await createImageBitmap(cover);
+                width = bmp.width; height = bmp.height;
+                const cvs = document.createElement('canvas');
+                cvs.width = width; cvs.height = height;
+                const ctx = cvs.getContext('2d');
+                ctx.drawImage(bmp,0,0);
+                bytes = ctx.getImageData(0,0,width,height).data;
+            }
 
-                // 3. Prepare Cover
-                const isWav = cover.name.endsWith('wav');
-                const ab = await cover.arrayBuffer();
-                let bytes = new Uint8Array(ab);
-                let offset = 0;
+            // 4. Inject
+            const setB = (i, b) => { bytes[i] = (bytes[i] & 0xFE) | b; };
+            let idx = 0;
+            const getIdx = () => {
+                if(isWav) return offset + idx++;
+                // Skip Alpha for PNG (Every 4th byte)
+                let r = Math.floor(idx/3)*4 + (idx%3);
+                idx++;
+                return r;
+            }
 
-                // Capture dims for PNG
-                let width, height;
+            // Write Length (32 bits)
+            for(let i=0; i<32; i++) setB(getIdx(), (encData.length >> (31-i)) & 1);
+            // Write Data
+            for(let b of encData) {
+                for(let i=7; i>=0; i--) setB(getIdx(), (b >> i) & 1);
+            }
 
-                if (isWav) {
-                    // ... (WAV logic same)
+            // Noise Fill
+            log("Injecting Noise...");
+            const max = isWav ? (bytes.length - offset) : (bytes.length/4)*3;
+            const chunk = 10000; 
+            const fill = () => {
+                let n = 0;
+                while(idx < max && n++ < chunk) setB(getIdx(), rndBit());
+                if(idx < max) setTimeout(fill, 0);
+                else finish();
+            };
+            
+            const finish = () => {
+                if(isWav) {
+                    const blob = new Blob([bytes], {type:'audio/wav'});
+                    save(blob, 'vault.wav');
                 } else {
-                    const bmp = await createImageBitmap(cover);
-                    width = bmp.width; height = bmp.height;
                     const cvs = document.createElement('canvas');
                     cvs.width = width; cvs.height = height;
                     const ctx = cvs.getContext('2d');
-                    ctx.drawImage(bmp, 0, 0);
-                    bytes = ctx.getImageData(0, 0, width, height).data;
+                    const imgData = new ImageData(new Uint8ClampedArray(bytes), width, height);
+                    ctx.putImageData(imgData, 0, 0);
+                    cvs.toBlob(b => save(b, 'vault.png'), 'image/png');
                 }
+                log("DONE. File downloaded.");
+            };
+            
+            const save = (b, n) => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(b);
+                a.download = n;
+                a.click();
+            };
+            fill();
 
-                // ... (Injection Logic same)
+        } catch(e) { log("Error: " + e); }
+    }
 
-                const finish = () => {
-                    if (isWav) {
-                        const blob = new Blob([bytes], { type: 'audio/wav' });
-                        save(blob, 'vault.wav');
-                    } else {
-                        const cvs = document.createElement('canvas');
-                        cvs.width = width; cvs.height = height;
-                        const ctx = cvs.getContext('2d');
-                        const imgData = new ImageData(new Uint8ClampedArray(bytes), width, height);
-                        ctx.putImageData(imgData, 0, 0);
-                        cvs.toBlob(b => save(b, 'vault.png'), 'image/png');
+    async function processUnlock() {
+        try {
+            log("Starting Unlock Sequence...");
+            const vault = document.getElementById('vault').files[0];
+            const pw = document.getElementById('pw_unlock').value;
+            if(!vault || !pw) throw "Missing inputs";
+
+            const isWav = vault.name.endsWith('wav');
+            const ab = await vault.arrayBuffer();
+            let bytes = new Uint8Array(ab);
+            let offset = 0;
+
+            if(isWav) {
+                const dv = new DataView(ab);
+                let p = 12;
+                while(p < dv.byteLength) {
+                    if(dv.getUint32(p, false) === 0x64617461) { // 'data'
+                        offset = p + 8;
+                        break;
                     }
-                    log("DONE. File downloaded.");
-                };
+                    p += 8 + dv.getUint32(p+4, true);
+                }
+            } else {
+                const bmp = await createImageBitmap(vault);
+                const cvs = document.createElement('canvas');
+                cvs.width = bmp.width; cvs.height = bmp.height;
+                const ctx = cvs.getContext('2d');
+                ctx.drawImage(bmp,0,0);
+                bytes = ctx.getImageData(0,0,cvs.width,cvs.height).data;
+            }
 
-                const save = (b, n) => {
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(b);
-                    a.download = n;
-                    a.click();
-                };
-                fill();
+            const getB = (i) => bytes[i] & 1;
+            let idx = 0;
+            const getIdx = () => {
+                if(isWav) return offset + idx++;
+                let r = Math.floor(idx/3)*4 + (idx%3);
+                idx++;
+                return r;
+            }
 
-            } catch (e) { log("Error: " + e); }
-        }
+            // Read Length
+            let len = 0;
+            for(let i=0; i<32; i++) len = (len << 1) | getB(getIdx());
+            log(`Detected Payload Size: ${len} bytes`);
+
+            if(len <= 0 || len > bytes.length) throw "Invalid payload size (Wrong password or file?)";
+
+            // Read Data
+            const encData = new Uint8Array(len);
+            for(let i=0; i<len; i++) {
+                let b = 0;
+                for(let j=0; j<8; j++) b = (b << 1) | getB(getIdx());
+                encData[i] = b;
+            }
+
+            // Decrypt
+            log("Decrypting...");
+            const zData = await crypt(encData, pw, 'dec');
+            
+            // Unzip
+            log("Unzipping...");
+            const zip = await JSZip.loadAsync(zData);
+            
+            for(let filename of Object.keys(zip.files)) {
+                const content = await zip.file(filename).async('blob');
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = filename;
+                a.click();
+                log(`Extracted: ${filename}`);
+            }
+            log("UNLOCK COMPLETE.");
+
+        } catch(e) { log("Error: " + e); }
+    }
     </script>
 </body>
 
