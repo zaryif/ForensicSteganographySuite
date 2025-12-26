@@ -1,0 +1,20 @@
+{
+    "name": "Radiohead Vault - Forensic Environment",
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {},
+        "ghcr.io/devcontainers/features/rust:1": {},
+        "ghcr.io/devcontainers/features/sshd:1": {}
+    },
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y steghide libimage-exiftool-perl p7zip-full g++ swiftlang",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "rust-lang.rust-analyzer",
+                "vadimcn.vscode-lldb",
+                "sswg.swift-lang"
+            ]
+        }
+    }
+}
