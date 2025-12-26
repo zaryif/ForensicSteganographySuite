@@ -4,6 +4,9 @@
 **License:** MIT
 **Status:** Stable / Production-Ready
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/zaryif/ForensicSteganographySuite)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Launch_Vault-success?style=for-the-badge&logo=html5)](https://zaryif.github.io/ForensicSteganographySuite/)
+
 ## Executive Summary
 
 The Forensic-Grade Steganography Suite is a comprehensive set of implementations designed for Anti-Forensic Data Storage. The system secures sensitive encrypted data within lossless media files (PNG/WAV) utilizing Least Significant Bit (LSB) injection. It distinguishes itself from standard steganographic tools by employing Cryptographically Secure Pseudo-Random Number Generators (CSPRNG) to eliminate statistical anomalies (entropy cliffs), thereby mitigating detection by standard forensic analysis tools.
