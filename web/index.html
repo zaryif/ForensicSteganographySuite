@@ -1,7 +1,10 @@
 <!-- 
-    RADIOHEAD VAULT v5.0 (Silent Edition)
+    RADIOHEAD VAULT v5.1 (ULTIMATE CRT EDITION)
     Architect: Md Zarif Azfar
     Copyright © 2025. All Rights Reserved.
+    
+    AESTHETIC: Radiohead // OK Computer (CRT Terminal)
+    CORE: Forensic-Grade v5.1 (CSPRNG + AES-GCM)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -9,519 +12,675 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADIOHEAD // VAULT v5.0</title>
+    <title>RADIOHEAD // VAULT v5.1</title>
+    <!-- JSZip for handling file archives in the browser -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
-            --bg: #000;
-            --fg: #0f0;
-            --dim: #004400;
-            --err: #f33;
-            --font: 'Courier New', monospace;
+            --bg-color: #050505;
+            --term-green: #33ff33;
+            --term-dim: #1a801a;
+            --err-red: #ff4444;
+            --font-stack: 'Courier New', Courier, monospace;
         }
 
         body {
-            background: var(--bg);
-            color: var(--fg);
-            font-family: var(--font);
+            background-color: var(--bg-color);
+            color: var(--term-green);
+            font-family: var(--font-stack);
+            margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 800px;
             width: 100%;
-            border: 1px solid var(--dim);
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* CRT Scanline Effect */
+        .container::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
         h1 {
-            border-bottom: 2px solid var(--fg);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--term-green);
+            padding-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--term-green);
+        }
+
+        .subtitle {
+            font-size: 0.8em;
+            color: var(--term-dim);
+            margin-bottom: 30px;
             text-transform: uppercase;
         }
 
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 2px solid var(--fg);
-            color: var(--fg);
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            background: #111;
-            border: 1px solid var(--dim);
-            color: var(--fg);
-            margin-bottom: 10px;
-        }
-
-        #log {
-            height: 150px;
-            overflow-y: auto;
-            border: 1px solid var(--dim);
-            padding: 10px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            white-space: pre-wrap;
-        }
-
-        .tab {
+        /* Tabs */
+        .tabs {
             display: flex;
             margin-bottom: 20px;
+            border: 1px solid var(--term-dim);
         }
 
-        .tab button {
+        .tab-btn {
             flex: 1;
-            padding: 10px;
-            background: #111;
-            border: 1px solid var(--dim);
-            color: var(--dim);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: var(--term-dim);
+            padding: 15px;
+            font-family: var(--font-stack);
+            font-size: 1.1em;
             cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            border-right: 1px solid var(--term-dim);
         }
 
-        .tab button.active {
-            background: var(--fg);
-            color: var(--bg);
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn:hover {
+            background: rgba(51, 255, 51, 0.1);
+            color: var(--term-green);
+        }
+
+        .tab-btn.active {
+            background: var(--term-green);
+            color: var(--bg-color);
             font-weight: bold;
+            box-shadow: inset 0 0 15px var(--term-dim);
         }
 
+        /* Panels */
         .panel {
             display: none;
+            border: 1px solid var(--term-dim);
+            padding: 25px;
+            background: rgba(10, 10, 10, 0.95);
+            box-shadow: 0 0 20px rgba(51, 255, 51, 0.05);
         }
 
         .panel.active {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--term-green);
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        input[type="file"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid var(--term-dim);
+            color: var(--term-green);
+            font-family: var(--font-stack);
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--term-green);
+            box-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid var(--term-green);
+            color: var(--term-green);
+            font-family: var(--font-stack);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action:hover {
+            background: var(--term-green);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--term-green);
+        }
+
+        .btn-action:disabled {
+            border-color: var(--term-dim);
+            color: var(--term-dim);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Logs & Status */
+        #log-area {
+            margin-top: 20px;
+            background: #000;
+            border: 1px solid var(--term-dim);
+            padding: 15px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .log-info {
+            color: var(--term-dim);
+        }
+
+        .log-proc {
+            color: #ffff00;
+        }
+
+        .log-success {
+            color: var(--term-green);
+            font-weight: bold;
+        }
+
+        .log-error {
+            color: var(--err-red);
+        }
+
+        /* Helpers */
+        .note {
+            font-size: 0.7em;
+            color: var(--term-dim);
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        #download-section {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+            padding: 20px;
+            border: 1px dashed var(--term-green);
+            background: rgba(0, 20, 0, 0.4);
+        }
+
+        .download-link {
+            display: inline-block;
+            color: var(--bg-color);
+            background: var(--term-green);
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 0 15px var(--term-green);
+        }
+
+        .security-badge {
+            display: inline-block;
+            border: 1px solid var(--term-dim);
+            padding: 2px 5px;
+            font-size: 0.6em;
+            margin-left: 10px;
+            color: var(--term-dim);
         }
     </style>
 </head>
 
 <body>
+
     <div class="container">
-        <h1>Radiohead Vault <span style="font-size:0.5em">v5.0</span></h1>
-        <div class="tab">
-            <button class="active" onclick="setMode('lock')">LOCK (Hide)</button>
-            <button onclick="setMode('unlock')">UNLOCK (Retrieve)</button>
+        <h1>Radiohead // Vault <span style="font-size:0.5em; vertical-align:middle; color:var(--term-dim)">v5.1
+                SILENT</span></h1>
+        <div class="subtitle">AES-GCM • Multi-Format (PNG/WAV) • CSPRNG Anti-Forensic</div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('hide')">LOCK (Encrypt & Hide)</button>
+            <button class="tab-btn" onclick="switchTab('retrieve')">UNLOCK (Extract & Decrypt)</button>
         </div>
 
-        <!-- LOCK UI -->
-        <div id="lock" class="panel active">
-            <label>Files to Hide:</label><input type="file" id="files" multiple>
-            <label>Cover (PNG/WAV):</label><input type="file" id="cover" accept=".png,.wav">
-            <label>Password:</label><input type="password" id="pw_lock">
-            <button class="btn" onclick="processLock()">ENCRYPT & HIDE</button>
+        <!-- HIDE PANEL -->
+        <div id="panel-hide" class="panel active">
+            <div class="form-group">
+                <label>1. Secret Files [Auto-Zipped]</label>
+                <input type="file" id="secret-files" multiple>
+            </div>
+
+            <div class="form-group">
+                <label>2. Cover Media [PNG Image or WAV Audio]</label>
+                <input type="file" id="cover-media" accept="image/png, image/jpeg, image/jpg, audio/wav">
+                <div class="note">LOSSLESS ONLY (PNG/WAV). METADATA WILL BE SCRUBBED.</div>
+            </div>
+
+            <div class="form-group">
+                <label>3. Filename Camouflage</label>
+                <input type="text" id="custom-filename" placeholder="e.g. IMG_2023.png or recording.wav">
+                <div class="note">LEAVE EMPTY FOR AUTO-GENERATED RANDOM NAME.</div>
+            </div>
+
+            <div class="form-group">
+                <label>4. Encryption Password</label>
+                <input type="password" id="hide-password" placeholder="Enter strong passphrase">
+            </div>
+
+            <button id="btn-hide" class="btn-action" onclick="processLock()">Initiate Sequence</button>
         </div>
 
-        <!-- UNLOCK UI -->
-        <div id="unlock" class="panel">
-            <label>Vault File (PNG/WAV):</label><input type="file" id="vault">
-            <label>Password:</label><input type="password" id="pw_unlock">
-            <button class="btn" onclick="processUnlock()">EXTRACT & DECRYPT</button>
+        <!-- RETRIEVE PANEL -->
+        <div id="panel-retrieve" class="panel">
+            <div class="form-group">
+                <label>1. Vault File [PNG or WAV]</label>
+                <input type="file" id="stego-media" accept="image/png, audio/wav">
+            </div>
+
+            <div class="form-group">
+                <label>2. Output Filename (Optional)</label>
+                <input type="text" id="unlock-filename" placeholder="e.g. MySecrets.zip">
+            </div>
+
+            <div class="form-group">
+                <label>3. Decryption Password</label>
+                <input type="password" id="retrieve-password" placeholder="Passphrase used during encryption">
+            </div>
+
+            <button id="btn-retrieve" class="btn-action" onclick="processUnlock()">Execute Extraction</button>
         </div>
 
-        <div id="log">SYSTEM READY...</div>
+        <!-- OUTPUT LOGS -->
+        <div id="log-area">SYSTEM INITIALIZED. WAITING FOR INPUT...</div>
+
+        <div id="download-section">
+            <div id="download-msg" style="margin-bottom:15px; color:var(--term-green); font-weight:bold;">PROCESSING
+                COMPLETE</div>
+            <a id="download-anchor" class="download-link" href="#" download>DOWNLOAD FILE</a>
+        </div>
+
     </div>
 
     <script>
-        const log = (m) => document.getElementById('log').innerText += `\n[${new Date().toLocaleTimeString()}] ${m}`;
-        const setMode = (m) => {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
-            document.getElementById(m).classList.add('active');
-            event.target.classList.add('active');
+        // --- LOGGER ---
+        const log = (msg, type = 'info') => {
+            const logArea = document.getElementById('log-area');
+            const line = document.createElement('div');
+            const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+            line.textContent = `[${timestamp}] ${msg}`;
+            line.className = `log-${type}`;
+            logArea.appendChild(line);
+            logArea.scrollTop = logArea.scrollHeight;
         };
 
-        // --- CRYPTO CORE ---
-        async function getK(pw, salt) {
-            const enc = new TextEncoder();
-            const kmat = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
-            return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 200000, hash: "SHA-256" }, kmat, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
-        }
-
-        async function crypt(data, pw, op) {
-            if (op === 'enc') {
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                const iv = crypto.getRandomValues(new Uint8Array(12));
-                const key = await getK(pw, salt);
-                const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
-                const res = new Uint8Array(salt.length + iv.length + ct.byteLength);
-                res.set(salt, 0); res.set(iv, 16); res.set(new Uint8Array(ct), 28);
-                return res;
-            } else {
-                const salt = data.slice(0, 16);
-                const iv = data.slice(16, 28);
-                const ct = data.slice(28);
-                const key = await getK(pw, salt);
-                return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct));
-            }
-        }
-
-        // --- STEGO CORE ---
-        // CSPRNG Noise Generator
-<!-- 
-    RADIOHEAD VAULT v5.0 (Silent Edition)
-    Architect: Md Zarif Azfar
-    Copyright © 2025. All Rights Reserved.
--->
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RADIOHEAD // VAULT v5.0</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <style>
-        :root {
-            --bg: #000;
-            --fg: #0f0;
-            --dim: #004400;
-            --err: #f33;
-            --font: 'Courier New', monospace;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--fg);
-            font-family: var(--font);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            border: 1px solid var(--dim);
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-        }
-
-        h1 {
-            border-bottom: 2px solid var(--fg);
-            text-transform: uppercase;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 2px solid var(--fg);
-            color: var(--fg);
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            background: #111;
-            border: 1px solid var(--dim);
-            color: var(--fg);
-            margin-bottom: 10px;
-        }
-
-        #log {
-            height: 150px;
-            overflow-y: auto;
-            border: 1px solid var(--dim);
-            padding: 10px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            white-space: pre-wrap;
-        }
-
-        .tab {
-            display: flex;
-            margin-bottom: 20px;
-        }
-
-        .tab button {
-            flex: 1;
-            padding: 10px;
-            background: #111;
-            border: 1px solid var(--dim);
-            color: var(--dim);
-            cursor: pointer;
-        }
-
-        .tab button.active {
-            background: var(--fg);
-            color: var(--bg);
-            font-weight: bold;
-        }
-
-        .panel {
-            display: none;
-        }
-
-        .panel.active {
-            display: block;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Radiohead Vault <span style="font-size:0.5em">v5.0</span></h1>
-        <div class="tab">
-            <button class="active" onclick="setMode('lock')">LOCK (Hide)</button>
-            <button onclick="setMode('unlock')">UNLOCK (Retrieve)</button>
-        </div>
-
-        <!-- LOCK UI -->
-        <div id="lock" class="panel active">
-            <label>Files to Hide:</label><input type="file" id="files" multiple>
-            <label>Cover (PNG/WAV):</label><input type="file" id="cover" accept=".png,.wav">
-            <label>Password:</label><input type="password" id="pw_lock">
-            <button class="btn" onclick="processLock()">ENCRYPT & HIDE</button>
-        </div>
-
-        <!-- UNLOCK UI -->
-        <div id="unlock" class="panel">
-            <label>Vault File (PNG/WAV):</label><input type="file" id="vault">
-            <label>Password:</label><input type="password" id="pw_unlock">
-            <button class="btn" onclick="processUnlock()">EXTRACT & DECRYPT</button>
-        </div>
-
-        <div id="log">SYSTEM READY...</div>
-    </div>
-
-    <script>
-        const log = (m) => document.getElementById('log').innerText += `\n[${new Date().toLocaleTimeString()}] ${m}`;
-        const setMode = (m) => {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
-            document.getElementById(m).classList.add('active');
-            event.target.classList.add('active');
+        const clearLogs = () => {
+            document.getElementById('log-area').innerHTML = '';
+            document.getElementById('download-section').style.display = 'none';
+            const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('log-area').innerHTML = `<div class="log-info">[${ts}] CONSOLE CLEARED. READY.</div>`;
         };
 
-        // --- CRYPTO CORE ---
-        async function getK(pw, salt) {
+        const switchTab = (tab) => {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`panel-${tab}`).classList.add('active');
+            const btns = document.querySelectorAll('.tab-btn');
+            if (tab === 'hide') btns[0].classList.add('active');
+            else btns[1].classList.add('active');
+            clearLogs();
+        };
+
+        // --- CRYPTO (AES-GCM) ---
+        async function getKeyMaterial(password) {
             const enc = new TextEncoder();
-            const kmat = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
-            return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 200000, hash: "SHA-256" }, kmat, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+            return window.crypto.subtle.importKey("raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits", "deriveKey"]);
+        }
+        async function getKey(keyMaterial, salt) {
+            return window.crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: 200000, hash: "SHA-256" }, keyMaterial, { "name": "AES-GCM", "length": 256 }, true, ["encrypt", "decrypt"]);
+        }
+        async function encryptData(dataBytes, password) {
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const keyMaterial = await getKeyMaterial(password);
+            const key = await getKey(keyMaterial, salt);
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+            const encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, dataBytes);
+            const result = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+            result.set(salt, 0); result.set(iv, salt.length); result.set(new Uint8Array(encrypted), salt.length + iv.length);
+            return result;
+        }
+        async function decryptData(packedData, password) {
+            try {
+                const salt = packedData.slice(0, 16);
+                const iv = packedData.slice(16, 28);
+                const data = packedData.slice(28);
+                const keyMaterial = await getKeyMaterial(password);
+                const key = await getKey(keyMaterial, salt);
+                const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
+                return new Uint8Array(decrypted);
+            } catch (e) { throw new Error("DECRYPTION FAILED. Wrong password or corrupted data."); }
         }
 
-        async function crypt(data, pw, op) {
-            if (op === 'enc') {
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                const iv = crypto.getRandomValues(new Uint8Array(12));
-                const key = await getK(pw, salt);
-                const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
-                const res = new Uint8Array(salt.length + iv.length + ct.byteLength);
-                res.set(salt, 0); res.set(iv, 16); res.set(new Uint8Array(ct), 28);
-                return res;
-            } else {
-                const salt = data.slice(0, 16);
-                const iv = data.slice(16, 28);
-                const ct = data.slice(28);
-                const key = await getK(pw, salt);
-                return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct));
-            }
+        // --- STEGANOGRAPHY CORE ---
+        function intToBits(num) {
+            const bits = [];
+            for (let i = 0; i < 32; i++) bits.push((num >> (31 - i)) & 1);
+            return bits;
         }
-
-        // --- STEGO CORE ---
-        // CSPRNG Noise Generator
-        const rndBit = () => {
+        function bitsToInt(bits) {
+            let num = 0;
+            for (let i = 0; i < 32; i++) num = (num << 1) | bits[i];
+            return num;
+        }
+        // v5.1 CSPRNG Upgrade
+        function getCSPRNG_Bit() {
             const buf = new Uint8Array(1);
-            crypto.getRandomValues(buf);
+            window.crypto.getRandomValues(buf);
             return buf[0] & 1;
-        };
+        }
 
+        // --- WAV PARSER ---
+        function findWavDataChunk(buffer) {
+            const view = new DataView(buffer);
+            let offset = 12; // Skip RIFF header
+            while (offset < view.byteLength) {
+                const chunkId = String.fromCharCode(
+                    view.getUint8(offset), view.getUint8(offset + 1),
+                    view.getUint8(offset + 2), view.getUint8(offset + 3)
+                );
+                const chunkSize = view.getUint32(offset + 4, true);
+
+                if (chunkId === 'data') {
+                    return { offset: offset + 8, size: chunkSize };
+                }
+                offset += 8 + chunkSize;
+            }
+            throw new Error("Invalid WAV: No 'data' chunk found.");
+        }
+
+        // --- MAIN HIDE PROCESS ---
         async function processLock() {
-        try {
-            log("Starting Lock Sequence...");
-            const files = document.getElementById('files').files;
-            const cover = document.getElementById('cover').files[0];
-            const pw = document.getElementById('pw_lock').value;
-            
-            if(!files.length || !cover || !pw) throw "Missing inputs";
+            clearLogs();
+            const fileInput = document.getElementById('secret-files');
+            const mediaInput = document.getElementById('cover-media');
+            const password = document.getElementById('hide-password').value;
+            const customName = document.getElementById('custom-filename').value.trim();
+            const btn = document.getElementById('btn-hide');
 
-            // 1. Zip
-            const zip = new JSZip();
-            for(let f of files) zip.file(f.name, f);
-            const zData = await zip.generateAsync({type:"uint8array"});
-            
-            // 2. Encrypt
-            const encData = await crypt(zData, pw, 'enc');
-            log(`Encrypted size: ${encData.length} bytes`);
-
-            // 3. Prepare Cover
-            const isWav = cover.name.endsWith('wav');
-            const ab = await cover.arrayBuffer();
-            let bytes = new Uint8Array(ab);
-            let offset = 0;
-            let width, height; // For PNG
-
-            if(isWav) {
-                const dv = new DataView(ab);
-                let p = 12;
-                while(p < dv.byteLength) {
-                    if(dv.getUint32(p, false) === 0x64617461) { // 'data'
-                        offset = p + 8;
-                        break;
-                    }
-                    p += 8 + dv.getUint32(p+4, true);
-                }
-            } else {
-                const bmp = await createImageBitmap(cover);
-                width = bmp.width; height = bmp.height;
-                const cvs = document.createElement('canvas');
-                cvs.width = width; cvs.height = height;
-                const ctx = cvs.getContext('2d');
-                ctx.drawImage(bmp,0,0);
-                bytes = ctx.getImageData(0,0,width,height).data;
+            if (!fileInput.files.length || !mediaInput.files[0] || !password) {
+                log("ERROR: MISSING FILES OR PASSWORD.", "error");
+                return;
             }
 
-            // 4. Inject
-            const setB = (i, b) => { bytes[i] = (bytes[i] & 0xFE) | b; };
-            let idx = 0;
-            const getIdx = () => {
-                if(isWav) return offset + idx++;
-                // Skip Alpha for PNG (Every 4th byte)
-                let r = Math.floor(idx/3)*4 + (idx%3);
-                idx++;
-                return r;
-            }
+            const mediaFile = mediaInput.files[0];
+            const isAudio = mediaFile.type.includes('audio') || mediaFile.name.endsWith('.wav');
 
-            // Write Length (32 bits)
-            for(let i=0; i<32; i++) setB(getIdx(), (encData.length >> (31-i)) & 1);
-            // Write Data
-            for(let b of encData) {
-                for(let i=7; i>=0; i--) setB(getIdx(), (b >> i) & 1);
-            }
+            btn.disabled = true;
 
-            // Noise Fill
-            log("Injecting Noise...");
-            const max = isWav ? (bytes.length - offset) : (bytes.length/4)*3;
-            const chunk = 10000; 
-            const fill = () => {
-                let n = 0;
-                while(idx < max && n++ < chunk) setB(getIdx(), rndBit());
-                if(idx < max) setTimeout(fill, 0);
-                else finish();
-            };
-            
-            const finish = () => {
-                if(isWav) {
-                    const blob = new Blob([bytes], {type:'audio/wav'});
-                    save(blob, 'vault.wav');
+            try {
+                // 1. Prepare Payload
+                log("STEP 1: Compressing & Encrypting...", "proc");
+                const zip = new JSZip();
+                for (let file of fileInput.files) zip.file(file.name, file);
+                const zipBlob = await zip.generateAsync({ type: "uint8array" });
+                const encryptedBytes = await encryptData(zipBlob, password);
+                log(`> Payload size: ${(encryptedBytes.length / 1024).toFixed(2)} KB`);
+
+                // 2. Prepare Carrier
+                let carrierBytes, dataOffset, totalCapacityBits, outputMime;
+
+                if (isAudio) {
+                    log("STEP 2: Processing Audio (WAV)...", "proc");
+                    outputMime = "audio/wav";
+                    const arrayBuffer = await mediaFile.arrayBuffer();
+                    carrierBytes = new Uint8Array(arrayBuffer);
+                    const chunkInfo = findWavDataChunk(arrayBuffer);
+                    dataOffset = chunkInfo.offset;
+                    const dataSize = chunkInfo.size;
+                    totalCapacityBits = dataSize;
                 } else {
-                    const cvs = document.createElement('canvas');
-                    cvs.width = width; cvs.height = height;
-                    const ctx = cvs.getContext('2d');
-                    const imgData = new ImageData(new Uint8ClampedArray(bytes), width, height);
-                    ctx.putImageData(imgData, 0, 0);
-                    cvs.toBlob(b => save(b, 'vault.png'), 'image/png');
+                    log("STEP 2: Processing Image (PNG)...", "proc");
+                    outputMime = "image/png";
+                    const imgBitmap = await createImageBitmap(mediaFile);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    canvas.width = imgBitmap.width;
+                    canvas.height = imgBitmap.height;
+                    ctx.drawImage(imgBitmap, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    carrierBytes = imgData.data;
+                    dataOffset = 0;
+                    totalCapacityBits = (carrierBytes.length / 4) * 3;
                 }
-                log("DONE. File downloaded.");
-            };
-            
-            const save = (b, n) => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(b);
-                a.download = n;
-                a.click();
-            };
-            fill();
 
-        } catch(e) { log("Error: " + e); }
-    }
+                // 3. Check Capacity
+                const requiredBits = 32 + (encryptedBytes.length * 8);
+                if (requiredBits > totalCapacityBits) {
+                    throw new Error(`CAPACITY EXCEEDED. Media too small.\nNeed: ${(requiredBits / 8 / 1024).toFixed(2)} KB\nCapacity: ${(totalCapacityBits / 8 / 1024).toFixed(2)} KB`);
+                }
 
-    async function processUnlock() {
-        try {
-            log("Starting Unlock Sequence...");
-            const vault = document.getElementById('vault').files[0];
-            const pw = document.getElementById('pw_unlock').value;
-            if(!vault || !pw) throw "Missing inputs";
+                // 4. Inject Data
+                log("STEP 3: Injecting LSB Data...", "proc");
 
-            const isWav = vault.name.endsWith('wav');
-            const ab = await vault.arrayBuffer();
-            let bytes = new Uint8Array(ab);
-            let offset = 0;
+                const setBit = (index, bit) => {
+                    carrierBytes[index] = (carrierBytes[index] & 0xFE) | bit;
+                };
 
-            if(isWav) {
-                const dv = new DataView(ab);
-                let p = 12;
-                while(p < dv.byteLength) {
-                    if(dv.getUint32(p, false) === 0x64617461) { // 'data'
-                        offset = p + 8;
-                        break;
+                const lengthBits = intToBits(encryptedBytes.length);
+                let carrierIdx = 0;
+
+                const getNextIdx = () => {
+                    if (isAudio) {
+                        return dataOffset + carrierIdx++;
+                    } else {
+                        let realIdx = dataOffset + Math.floor(carrierIdx / 3) * 4 + (carrierIdx % 3);
+                        carrierIdx++;
+                        return realIdx;
                     }
-                    p += 8 + dv.getUint32(p+4, true);
+                };
+
+                for (let b of lengthBits) setBit(getNextIdx(), b);
+                for (let byte of encryptedBytes) {
+                    for (let i = 7; i >= 0; i--) {
+                        setBit(getNextIdx(), (byte >> i) & 1);
+                    }
                 }
-            } else {
-                const bmp = await createImageBitmap(vault);
-                const cvs = document.createElement('canvas');
-                cvs.width = bmp.width; cvs.height = bmp.height;
-                const ctx = cvs.getContext('2d');
-                ctx.drawImage(bmp,0,0);
-                bytes = ctx.getImageData(0,0,cvs.width,cvs.height).data;
+
+                // 5. Full Noise Injection (v5.1 Upgrade)
+                log("STEP 4: Injecting Full-Surface Noise (CSPRNG)...", "log-info");
+
+                const CHUNK_SIZE = 50000;
+                const finish = () => {
+                    log("STEP 5: Finalizing...", "proc");
+                    let finalBlob;
+
+                    if (isAudio) {
+                        finalBlob = new Blob([carrierBytes], { type: outputMime });
+                        triggerDownload(finalBlob);
+                    } else {
+                        const canvas = document.createElement('canvas');
+                        createImageBitmap(mediaFile).then(bmp => {
+                            canvas.width = bmp.width;
+                            canvas.height = bmp.height;
+                            const ctx = canvas.getContext('2d');
+                            const newImgData = new ImageData(carrierBytes, canvas.width, canvas.height);
+                            ctx.putImageData(newImgData, 0, 0);
+                            canvas.toBlob(blob => triggerDownload(blob), outputMime);
+                        });
+                    }
+                };
+
+                const triggerDownload = (blob) => {
+                    let fname = customName;
+                    if (!fname) {
+                        const r = Math.floor(Math.random() * 9000) + 1000;
+                        fname = isAudio ? `REC_${r}.wav` : `IMG_${r}.png`;
+                    } else {
+                        if (isAudio && !fname.endsWith('.wav')) fname += '.wav';
+                        if (!isAudio && !fname.endsWith('.png')) fname += '.png';
+                    }
+
+                    const url = URL.createObjectURL(blob);
+                    const dl = document.getElementById('download-anchor');
+                    dl.href = url;
+                    dl.download = fname;
+                    document.getElementById('download-section').style.display = 'block';
+                    log(`SUCCESS. File ready: ${fname}`, "success");
+                    btn.disabled = false;
+                };
+
+                // Noise Loop
+                const processNoise = () => {
+                    let count = 0;
+                    while (carrierIdx < totalCapacityBits && count < CHUNK_SIZE) {
+                        setBit(getNextIdx(), getCSPRNG_Bit()); // Uses window.crypto
+                        count++;
+                    }
+                    if (carrierIdx < totalCapacityBits) requestAnimationFrame(processNoise);
+                    else finish();
+                };
+
+                processNoise();
+
+            } catch (e) {
+                log(e.message, "error");
+                btn.disabled = false;
+            }
+        }
+
+        // --- MAIN RETRIEVE PROCESS ---
+        async function processUnlock() {
+            clearLogs();
+            const mediaInput = document.getElementById('stego-media');
+            const password = document.getElementById('retrieve-password').value;
+            const nameInput = document.getElementById('unlock-filename');
+            const btn = document.getElementById('btn-retrieve');
+
+            if (!mediaInput.files[0] || !password) {
+                log("ERROR: MISSING FILE OR PASSWORD.", "error");
+                return;
             }
 
-            const getB = (i) => bytes[i] & 1;
-            let idx = 0;
-            const getIdx = () => {
-                if(isWav) return offset + idx++;
-                let r = Math.floor(idx/3)*4 + (idx%3);
-                idx++;
-                return r;
+            const mediaFile = mediaInput.files[0];
+            const isAudio = mediaFile.type.includes('audio') || mediaFile.name.endsWith('.wav');
+
+            btn.disabled = true;
+            log("STEP 1: Analyzing Media Structure...", "proc");
+
+            try {
+                let carrierBytes, dataOffset;
+
+                if (isAudio) {
+                    const buffer = await mediaFile.arrayBuffer();
+                    carrierBytes = new Uint8Array(buffer);
+                    const chunkInfo = findWavDataChunk(buffer);
+                    dataOffset = chunkInfo.offset;
+                } else {
+                    const imgBitmap = await createImageBitmap(mediaFile);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = imgBitmap.width;
+                    canvas.height = imgBitmap.height;
+                    ctx.drawImage(imgBitmap, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    carrierBytes = imgData.data;
+                    dataOffset = 0;
+                }
+
+                let carrierIdx = 0;
+                const readBit = () => {
+                    let realIdx;
+                    if (isAudio) {
+                        realIdx = dataOffset + carrierIdx++;
+                    } else {
+                        realIdx = dataOffset + Math.floor(carrierIdx / 3) * 4 + (carrierIdx % 3);
+                        carrierIdx++;
+                    }
+                    return carrierBytes[realIdx] & 1;
+                };
+
+                // Read Header
+                const lengthBits = [];
+                for (let i = 0; i < 32; i++) lengthBits.push(readBit());
+                const dataLength = bitsToInt(lengthBits);
+
+                const maxLen = isAudio ? (carrierBytes.length - dataOffset) : carrierBytes.length;
+                if (dataLength <= 0 || dataLength > maxLen) {
+                    throw new Error("NO VAULT DETECTED. File corrupted or clean.");
+                }
+
+                log(`> Payload detected: ${(dataLength / 1024).toFixed(2)} KB`, "proc");
+
+                // Read Payload
+                const extractedBytes = new Uint8Array(dataLength);
+                for (let i = 0; i < dataLength; i++) {
+                    let byte = 0;
+                    for (let bit = 0; bit < 8; bit++) {
+                        byte = (byte << 1) | readBit();
+                    }
+                    extractedBytes[i] = byte;
+                }
+
+                log("STEP 2: Decrypting...", "proc");
+                const decryptedZip = await decryptData(extractedBytes, password);
+
+                let filename = nameInput.value.trim() || "UNLOCKED_DATA.zip";
+                if (!filename.toLowerCase().endsWith('.zip')) filename += '.zip';
+
+                const blob = new Blob([decryptedZip], { type: "application/zip" });
+                const url = URL.createObjectURL(blob);
+                const dlLink = document.getElementById('download-anchor');
+                dlLink.href = url;
+                dlLink.download = filename;
+                document.getElementById('download-section').style.display = 'block';
+                log(`ACCESS GRANTED. DOWNLOAD: ${filename}`, "success");
+
+                btn.disabled = false;
+
+            } catch (e) {
+                log(e.message, "error");
+                btn.disabled = false;
             }
-
-            // Read Length
-            let len = 0;
-            for(let i=0; i<32; i++) len = (len << 1) | getB(getIdx());
-            log(`Detected Payload Size: ${len} bytes`);
-
-            if(len <= 0 || len > bytes.length) throw "Invalid payload size (Wrong password or file?)";
-
-            // Read Data
-            const encData = new Uint8Array(len);
-            for(let i=0; i<len; i++) {
-                let b = 0;
-                for(let j=0; j<8; j++) b = (b << 1) | getB(getIdx());
-                encData[i] = b;
-            }
-
-            // Decrypt
-            log("Decrypting...");
-            const zData = await crypt(encData, pw, 'dec');
-            
-            // Unzip
-            log("Unzipping...");
-            const zip = await JSZip.loadAsync(zData);
-            
-            for(let filename of Object.keys(zip.files)) {
-                const content = await zip.file(filename).async('blob');
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(content);
-                a.download = filename;
-                a.click();
-                log(`Extracted: ${filename}`);
-            }
-            log("UNLOCK COMPLETE.");
-
-        } catch(e) { log("Error: " + e); }
-    }
+        }
     </script>
+
 </body>
 
 </html>

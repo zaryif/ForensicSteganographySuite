@@ -1,4 +1,4 @@
-# Forensic-Grade Steganography Suite (v5.0)
+# Forensic-Grade Steganography Suite (v5.1 - ULTIMATE CRT EDITION)
 
 **Architect:** Md Zarif Azfar
 **License:** MIT
@@ -9,11 +9,11 @@
 
 ## Executive Summary
 
-The **Radiohead Vault (Forensic-Grade Steganography Suite)** is the ultimate anti-forensic data storage solution. It secures sensitive encrypted data within lossless media files (PNG/WAV) using advanced Least Significant Bit (LSB) injection and Cryptographically Secure Pseudo-Random Number Generators (CSPRNG).
+The **Radiohead Vault (Forensic-Grade Steganography Suite)** is the ultimate anti-forensic data storage solution. It secures sensitive encrypted data within lossless media files (PNG/WAV) using advanced Least Significant Bit (LSB) injection and **upgraded Cryptographically Secure Pseudo-Random Number Generators (CSPRNG)**.
 
 **[Launch Live Web Vault](https://zaryif.github.io/ForensicSteganographySuite/)** (Runs entirely in browser RAM for maximum OpSec)
 
-This suite eliminates statistical anomalies (entropy cliffs), making hidden data mathematically indistinguishable from random noise. It includes implementations in **HTML5, Python, C++, Rust, Swift, and Bash**.
+This **v5.1 CRT Edition** features a retro-terminal interface and eliminates statistical anomalies (entropy cliffs) by employing **Full-Surface Noise Injection**, making hidden data mathematically indistinguishable from random noise. It includes implementations in **HTML5, Python, C++, Rust, Swift, and Bash**.
 
 ## Repository Architecture
 
