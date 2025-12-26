@@ -37,6 +37,8 @@ For optimal Operational Security (OpSec), it is recommended to execute the Web i
 ## Documentation
 
 *   [Technical Compendium (Ultimate Reference)](docs/TECHNICAL_COMPENDIUM.md)
+*   [Complete Project History & Issues Report](COMPLETE_PROJECT_HISTORY.md)
+*   [Recent Issue Resolution Report](issue_resolution_report.md)
 *   [Technical Overview](docs/TECHNICAL_OVERVIEW.md)
 *   [System Requirements](docs/SYSTEM_REQUIREMENTS.txt)
 *   [USB Access Protocol](docs/USB_ACCESS_PROTOCOL.txt)
@@ -50,6 +52,8 @@ RadioheadVault/
 │   ├── TECHNICAL_OVERVIEW.md
 │   ├── SYSTEM_REQUIREMENTS.txt
 │   └── USB_ACCESS_PROTOCOL.txt
+├── COMPLETE_PROJECT_HISTORY.md  <-- PROJECT JOURNEY & RESOLUTIONS
+├── issue_resolution_report.md  <-- RECENT PATCH NOTES
 ├── index.html  <-- WEB VAULT (v5.1 CRT)
 ├── python/
 │   └── vault.py
