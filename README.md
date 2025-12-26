@@ -19,7 +19,7 @@ This **v5.1 CRT Edition** features a retro-terminal interface and eliminates sta
 
 | Directory | Language | Description | Forensic Profile |
 | :--- | :--- | :--- | :--- |
-| `/web` | HTML5/JS | Client-side execution in browser RAM. Recommended for high-security contexts. | Minimal (Zero Trace in Live OS) |
+| `/` (Root) | HTML5/JS | **Web Vault (Live Demo)**. Client-side execution in browser RAM. | Minimal (Zero Trace in Live OS) |
 | `/python` | Python | Script-based implementation for automation and batch analysis. | High (Dependency Logs) |
 | `/cpp` | C++ | High-performance binary for large-scale processing. | Medium |
 | `/rust` | Rust | Memory-safe, high-performance binary implementation. | Medium |
@@ -30,7 +30,7 @@ This **v5.1 CRT Edition** features a retro-terminal interface and eliminates sta
 
 For optimal Operational Security (OpSec), it is recommended to execute the Web implementation within a volatile memory environment (e.g., Tails OS).
 
-1. Navigate to the `web/` directory.
+1. Navigate to the root directory.
 2. Launch `index.html` in a modern web browser.
 3. Disconnect network interfaces to ensure an air-gapped environment.
 
@@ -50,8 +50,7 @@ RadioheadVault/
 │   ├── TECHNICAL_OVERVIEW.md
 │   ├── SYSTEM_REQUIREMENTS.txt
 │   └── USB_ACCESS_PROTOCOL.txt
-├── web/
-│   └── index.html
+├── index.html  <-- WEB VAULT (v5.1 CRT)
 ├── python/
 │   └── vault.py
 ├── cpp/
