@@ -465,6 +465,8 @@
 
                 // 2. Prepare Carrier
                 let carrierBytes, dataOffset, totalCapacityBits, outputMime;
+                let imgBitmap = null; // Declare at outer scope for iOS compatibility
+                let originalWidth = 0, originalHeight = 0;
 
                 if (isAudio) {
                     log("STEP 2: Processing Audio (WAV)...", "proc");
@@ -478,11 +480,21 @@
                 } else {
                     log("STEP 2: Processing Image (PNG)...", "proc");
                     outputMime = "image/png";
-                    const imgBitmap = await createImageBitmap(mediaFile);
+
+                    // Check if cover is JPEG and needs conversion to PNG
+                    const isJpeg = mediaFile.type === 'image/jpeg' || mediaFile.type === 'image/jpg' ||
+                        mediaFile.name.toLowerCase().endsWith('.jpg') || mediaFile.name.toLowerCase().endsWith('.jpeg');
+                    if (isJpeg) {
+                        log("> Converting JPEG cover to PNG format...", "proc");
+                    }
+
+                    imgBitmap = await createImageBitmap(mediaFile);
+                    originalWidth = imgBitmap.width;
+                    originalHeight = imgBitmap.height;
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                    canvas.width = imgBitmap.width;
-                    canvas.height = imgBitmap.height;
+                    canvas.width = originalWidth;
+                    canvas.height = originalHeight;
                     ctx.drawImage(imgBitmap, 0, 0);
                     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     carrierBytes = imgData.data;
@@ -496,8 +508,6 @@
                 if (!isAudio && requiredBits > totalCapacityBits) {
                     // Calculate required dimensions (add 10% buffer for safety)
                     const requiredPixels = Math.ceil((requiredBits * 1.1) / 3);
-                    const originalWidth = imgBitmap.width;
-                    const originalHeight = imgBitmap.height;
                     const aspectRatio = originalWidth / originalHeight;
 
                     // Calculate new dimensions maintaining aspect ratio
@@ -582,7 +592,7 @@
                         triggerDownload(finalBlob);
                     } else {
                         // Use enlarged dimensions if auto-resize was applied
-                        const dims = window._vaultEnlargedDimensions || { width: imgBitmap.width, height: imgBitmap.height };
+                        const dims = window._vaultEnlargedDimensions || { width: originalWidth, height: originalHeight };
                         const canvas = document.createElement('canvas');
                         canvas.width = dims.width;
                         canvas.height = dims.height;
