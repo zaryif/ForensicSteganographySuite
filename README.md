@@ -9,7 +9,11 @@
 
 ## Executive Summary
 
-The Forensic-Grade Steganography Suite is a comprehensive set of implementations designed for Anti-Forensic Data Storage. The system secures sensitive encrypted data within lossless media files (PNG/WAV) utilizing Least Significant Bit (LSB) injection. It distinguishes itself from standard steganographic tools by employing Cryptographically Secure Pseudo-Random Number Generators (CSPRNG) to eliminate statistical anomalies (entropy cliffs), thereby mitigating detection by standard forensic analysis tools.
+The **Radiohead Vault (Forensic-Grade Steganography Suite)** is the ultimate anti-forensic data storage solution. It secures sensitive encrypted data within lossless media files (PNG/WAV) using advanced Least Significant Bit (LSB) injection and Cryptographically Secure Pseudo-Random Number Generators (CSPRNG).
+
+**[Launch Live Web Vault](https://zaryif.github.io/ForensicSteganographySuite/)** (Runs entirely in browser RAM for maximum OpSec)
+
+This suite eliminates statistical anomalies (entropy cliffs), making hidden data mathematically indistinguishable from random noise. It includes implementations in **HTML5, Python, C++, Rust, Swift, and Bash**.
 
 ## Repository Architecture
 
