@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+
+# C++
+*.o
+*.exe
+*.out
+
+# Rust
+target/
+Cargo.lock
+
+# Swift
+.build/
+.swiftpm/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project Specific (Generated Files)
+*.7z
+*.png
+*.jpg
+*.jpeg
