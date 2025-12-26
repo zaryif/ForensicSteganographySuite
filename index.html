@@ -520,20 +520,17 @@
                         newHeight = Math.ceil(newWidth / aspectRatio);
                     }
 
-                    log(`> Auto-resizing cover: ${originalWidth}x${originalHeight} → ${newWidth}x${newHeight}`, "proc");
+                    log(`> NOTICE: Payload too large for cover image.`, "proc");
+                    log(`> Cover will be auto-resized: ${originalWidth}x${originalHeight} → ${newWidth}x${newHeight}`, "proc");
 
-                    // Create enlarged canvas and tile/stretch original image
+                    // Create enlarged canvas and STRETCH (not tile) original image
                     const enlargedCanvas = document.createElement('canvas');
                     enlargedCanvas.width = newWidth;
                     enlargedCanvas.height = newHeight;
                     const enlargedCtx = enlargedCanvas.getContext('2d', { willReadFrequently: true });
 
-                    // Tile the original image to fill enlarged canvas (maintains natural patterns)
-                    for (let y = 0; y < newHeight; y += originalHeight) {
-                        for (let x = 0; x < newWidth; x += originalWidth) {
-                            enlargedCtx.drawImage(imgBitmap, x, y);
-                        }
-                    }
+                    // Stretch the original image to fill enlarged canvas (no tiling)
+                    enlargedCtx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
 
                     // Get new image data
                     const newImgData = enlargedCtx.getImageData(0, 0, newWidth, newHeight);
