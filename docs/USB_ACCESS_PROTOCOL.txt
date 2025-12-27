@@ -1,0 +1,41 @@
+SECURE STORAGE PROTOCOL - ACCESS INSTRUCTIONS
+
+ARCHITECT: Md Zarif Azfar
+CLASSIFICATION: CONFIDENTIAL
+
+[REQUIRED TOOLS]
+
+7-Zip (Windows) or Keka (macOS)
+
+Terminal / Command Prompt
+
+[DECRYPTION PROTOCOL]
+This drive contains steganographically hidden data. The files appearing as
+standard images (PNG/JPG) contain encrypted archives.
+
+STEP 1: IDENTIFICATION
+Locate the target file.
+Target File: [INSERT FILENAME HERE] (e.g., IMG_8492.png)
+
+STEP 2: EXTRACTION
+The data is embedded via binary concatenation or LSB injection.
+
+METHOD A (Rename):
+
+Rename the file extension from .png to .7z
+
+Double click to open with 7-Zip.
+
+METHOD B (Steghide - If applicable):
+
+Open Terminal.
+
+Run: steghide extract -sf [FILENAME]
+
+STEP 3: DECRYPTION
+Enter the AES-256 Passphrase when prompted.
+Passphrase Hint: [INSERT HINT OR LEAVE BLANK]
+
+[WARNING]
+Do not view these files on a public computer.
+Ensure "Show Hidden Files" is enabled if looking for keyfiles.

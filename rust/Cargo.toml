@@ -1,0 +1,8 @@
+[package]
+name = "radiohead_vault"
+version = "5.1.0"
+edition = "2021"
+
+[dependencies]
+aes-gcm = "0.10"
+rand = "0.8"
